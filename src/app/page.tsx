@@ -17,6 +17,8 @@ export default function Home() {
     null,
   ]);
   const [hasWon, setHasWon] = useState<any>(false);
+  const [startGame, setstartGame] = useState<any>(false);
+  const [wonTournament, setWonTournament] = useState<any>(false);
 
   const [canMove, updateCanMove] = useState<any>(false);
   const [playerName, setplayerName] = useState<any>(false);
@@ -33,40 +35,49 @@ export default function Home() {
   ]);
   const updateMove = (position: number, value: string, shouldEmit: boolean) => {
     console.log("current move type");
-    if (shouldEmit) {
-      (window as any).playerSocket.emit("PLAY", {
-        position,
-        roomId: players.id,
-        player: (window as any).playerSocket.id,
-      });
-    }
-    setGameState((prevItems: any) => {
-      const newItems = [...prevItems];
-      console.log(newItems);
-      newItems[position] = value;
-      let result = checkWhoWon(newItems);
-      console.log("result", result);
-      setHasWon(result);
+    if (!gameState[position]) {
+      setGameState((prevItems: any) => {
+        const newItems = [...prevItems];
+        console.log(newItems);
 
-      if (result || result == 0) {
-        updateCanMove(false);
-        console.log("sdsaweaweaweawe", (window as any).moveType);
-        if (
-          (result == (window as any).moveType ||
-            result == (window as any).moveType) &&
-          !(window as any).won
-        ) {
-          (window as any).won = true;
-          (window as any).playerSocket.emit("PLAYER-WON", {
-            room: players.id,
-            playerId: (window as any).playerSocket.id,
-          });
+        newItems[position] = value;
+        let result = checkWhoWon(newItems);
+        console.log("result", result);
+        setHasWon(result);
+
+        if (result || result == 0) {
+          updateCanMove(false);
+          console.log("sdsaweaweaweawe", (window as any).moveType);
+          if (
+            (result == (window as any).moveType ||
+              result == (window as any).moveType) &&
+            !(window as any).won
+          ) {
+            (window as any).won = true;
+            (window as any).playerSocket.emit("PLAYER-WON", {
+              room: players.id,
+              playerId: (window as any).playerSocket.id,
+            });
+          }
         }
-      }
 
-      return newItems;
-    });
-    updateCanMove(false);
+        return newItems;
+      });
+      updateCanMove(false);
+      if (shouldEmit) {
+        let emitBoard = gameState;
+
+        emitBoard[position] = value;
+
+        (window as any).playerSocket.emit("PLAY", {
+          position,
+          roomId: players.id,
+          player: (window as any).playerSocket.id,
+          board: emitBoard,
+        });
+        console.log("game state", gameState);
+      }
+    }
   };
 
   const restart = () => {
@@ -105,6 +116,8 @@ export default function Home() {
     });
     (window as any).playerSocket.on("START-PLAY", (data: any) => {
       setPlayers(data);
+      setstartGame(true);
+      (window as any).roomId = data.id;
       console.log("idsdsdsd", data.player1.id, (window as any).playerSocket.id);
       setGameState([null, null, null, null, null, null, null, null, null]);
       if (data.player1.id == (window as any).playerSocket.id) {
@@ -115,7 +128,17 @@ export default function Home() {
         updateCanMove(false);
       }
     });
-
+    (window as any).playerSocket.on("YOU-WON-THIS-ROUND", (data: any) => {
+      setHasWon((window as any).moveType);
+      console.log("plaererere", (window as any).roomId);
+      (window as any).playerSocket.emit("PLAYER-WON", {
+        room: (window as any).roomId,
+        playerId: (window as any).playerSocket.id,
+      });
+    });
+    (window as any).playerSocket.on("YOU-WON", (data: any) => {
+      setWonTournament(true);
+    });
     (window as any).playerSocket.on("PLAYER-PLAYED", (data: any) => {
       console.log("current player", (window as any).moveType);
       if (data.player != (window as any).playerSocket.id) {
@@ -132,13 +155,39 @@ export default function Home() {
   }
   return (
     <main className=" min-h-screen flex-col items-center justify-between p-24">
-      <p>please enter your name : </p>
-      <input onChange={(e) => setplayerName(e.target.value)} type="text" />
-      <button onClick={() => sn()}>Submit</button>
+      <div className={`text-center ${startGame ? "none" : "block"}`}>
+        <p>Enter your name to start </p> <br />
+        <input onChange={(e) => setplayerName(e.target.value)} type="text" />
+        <button onClick={() => sn()}>Submit</button>
+      </div>
       {/* <p> Player 1 : {players.name}</p>
       Player 2 : {players.name} */}
       <p></p> <br />
-      <div id="game-frame">
+      <p
+        className={`text-center mb-5 ${
+          startGame && !hasWon ? "block" : "none"
+        }`}
+      >
+        {" "}
+        Let the game begin!
+      </p>
+      {(hasWon || hasWon === "0") && (
+        <p className="text-center">
+          {!wonTournament && (
+            <>
+              {hasWon == (window as any).moveType
+                ? "Congratulations you have won this match. please while we connect you to the next round..."
+                : "Sorry, please try again"}
+            </>
+          )}
+          {wonTournament && (
+            <span className="text-2xl text-green-400">
+              🥇🥇🥇 YOU HAVE WON THIS TOURNAMENT 🥇🥇🥇
+            </span>
+          )}
+        </p>
+      )}
+      <div id="game-frame" className={startGame ? "block" : "none"}>
         {gameState.map((state: any, index: number) => {
           return (
             <div
@@ -154,13 +203,6 @@ export default function Home() {
           );
         })}
       </div>
-      {(hasWon || hasWon == "0") && (
-        <>
-          {hasWon == (window as any).moveType
-            ? "Congratulations you have won this match. please while we connect you to the next round..."
-            : "Sorry, please try again"}
-        </>
-      )}
     </main>
   );
 }

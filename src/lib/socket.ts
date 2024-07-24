@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-export const createSocket = (playerData: any) => {
+const createSocket = (playerData: any) => {
   const socket = io("http://192.168.111.116:3000/", {
     query: {
       name: playerData.name,
@@ -10,3 +10,14 @@ export const createSocket = (playerData: any) => {
   });
   return socket;
 };
+const moderatorSocket = () => {
+  const socket = io("http://192.168.111.116:3000/", {
+    query: {
+      name: "syd",
+      role: "moderator",
+    },
+    transports: ["websocket"],
+  });
+  return socket;
+};
+export { createSocket, moderatorSocket };
