@@ -36,7 +36,7 @@ export default function DB() {
         Start Tournament
       </button>
 
-      {currentRoom.length && (
+      {Boolean(currentRoom.length) && (
         <div className="counts">
           <h1 className="mb-[3rem]">
             Players playing in this tournament and their pairings
