@@ -10,10 +10,10 @@ export default function DB() {
   useEffect(() => {
     (window as any).moderatorSocket = moderatorSocket();
 
-    (window as any).moderatorSocket.on("ALL-MEMBERS", (onlineMembers) => {
+    (window as any).moderatorSocket.on("ALL-MEMBERS", (onlineMembers: any) => {
       setMembers(onlineMembers);
     });
-    (window as any).moderatorSocket.on("ALL_ROOMS", (onlineMembers) => {
+    (window as any).moderatorSocket.on("ALL_ROOMS", (onlineMembers: any) => {
       setcurrentRoom(onlineMembers);
     });
   }, []);
@@ -21,8 +21,6 @@ export default function DB() {
   const startTournament = () => {
     if (members.length % 2 === 0) {
       (window as any).moderatorSocket.emit("START-TOURNAMENT");
-      // alert("Tournament started!");
-      // Add your tournament logic here
     }
   };
 
@@ -30,7 +28,7 @@ export default function DB() {
     <div>
       <h1>Online Members</h1>
       <ul>
-        {members.map((member, index) => (
+        {members.map((member: any, index: number) => (
           <li key={index}>{member.name}</li>
         ))}
       </ul>
@@ -38,13 +36,12 @@ export default function DB() {
         Start Tournament
       </button>
 
-      <div className="counts">
-        {
-          // maxRooms.forEach(count => {
-
-          // })
-
-          currentRoom.map((room: any, index) => {
+      {currentRoom.length && (
+        <div className="counts">
+          <h1 className="mb-5">
+            Players playing in this tournament and their pairings
+          </h1>
+          {currentRoom.map((room: any, index) => {
             return (
               <>
                 <div className={`room-${room.count} inline room`}>
@@ -56,9 +53,9 @@ export default function DB() {
                 )}
               </>
             );
-          })
-        }
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 }

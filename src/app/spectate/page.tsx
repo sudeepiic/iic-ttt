@@ -7,7 +7,7 @@ function Spectate() {
   useEffect(() => {
     (window as any).moderatorSocket = moderatorSocket();
 
-    (window as any).moderatorSocket.on("ALL_ROOMS", (rooms) => {
+    (window as any).moderatorSocket.on("ALL_ROOMS", (rooms: any) => {
       setallRooms(rooms);
     });
   }, []);

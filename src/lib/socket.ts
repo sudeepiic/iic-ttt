@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 
 const createSocket = (playerData: any) => {
-  const socket = io("http://192.168.111.116:3000/", {
+  const socket = io("https://iic-ttt-backend.onrender.com/", {
     query: {
       name: playerData.name,
       role: playerData.role,
@@ -11,7 +11,7 @@ const createSocket = (playerData: any) => {
   return socket;
 };
 const moderatorSocket = () => {
-  const socket = io("http://192.168.111.116:3000/", {
+  const socket = io("https://iic-ttt-backend.onrender.com/", {
     query: {
       name: "syd",
       role: "moderator",

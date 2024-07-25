@@ -29,11 +29,11 @@ export default function Home() {
   const [players, setPlayers] = useState<any>([
     {
       name: "syd",
-      id: "ssda",
+      id: "playerID",
     },
     {
       name: "divya",
-      id: "ssd2",
+      id: "playerID",
     },
   ]);
   const updateMove = (position: number, value: string, shouldEmit: boolean) => {
