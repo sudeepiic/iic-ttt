@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 import { createSocket } from "@/lib/socket";
@@ -22,7 +22,10 @@ export default function Home() {
 
   const [canMove, updateCanMove] = useState<any>(false);
   const [playerName, setplayerName] = useState<any>(false);
-  (window as any).won = false;
+  useEffect(() => {
+    (window as any).won = false;
+  }, []);
+
   const [players, setPlayers] = useState<any>([
     {
       name: "syd",

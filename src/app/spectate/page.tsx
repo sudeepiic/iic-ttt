@@ -1,15 +1,19 @@
 "use client";
 // @ts-ignore
 import { moderatorSocket } from "@/lib/socket";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Spectate() {
-  (window as any).moderatorSocket = moderatorSocket();
+  useEffect(() => {
+    (window as any).moderatorSocket = moderatorSocket();
+
+    (window as any).moderatorSocket.on("ALL_ROOMS", (rooms) => {
+      setallRooms(rooms);
+    });
+  }, []);
+
   const [allRooms, setallRooms] = useState([]);
 
-  (window as any).moderatorSocket.on("ALL_ROOMS", (rooms) => {
-    setallRooms(rooms);
-  });
   return (
     <div className=" mt-[4rem] ">
       <h2 className="text-center mb-5 text-2xl font-bold underline uppercase">

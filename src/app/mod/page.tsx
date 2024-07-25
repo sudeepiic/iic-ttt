@@ -4,18 +4,19 @@ import { moderatorSocket } from "@/lib/socket";
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
 
-(window as any).moderatorSocket = moderatorSocket();
 export default function DB() {
   const [members, setMembers] = useState([]);
   const [currentRoom, setcurrentRoom] = useState([]);
-  const [maxRooms, setmaxRooms] = useState([]);
+  useEffect(() => {
+    (window as any).moderatorSocket = moderatorSocket();
 
-  (window as any).moderatorSocket.on("ALL-MEMBERS", (onlineMembers) => {
-    setMembers(onlineMembers);
-  });
-  (window as any).moderatorSocket.on("ALL_ROOMS", (onlineMembers) => {
-    setcurrentRoom(onlineMembers);
-  });
+    (window as any).moderatorSocket.on("ALL-MEMBERS", (onlineMembers) => {
+      setMembers(onlineMembers);
+    });
+    (window as any).moderatorSocket.on("ALL_ROOMS", (onlineMembers) => {
+      setcurrentRoom(onlineMembers);
+    });
+  }, []);
 
   const startTournament = () => {
     if (members.length % 2 === 0) {
