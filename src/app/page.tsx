@@ -19,9 +19,36 @@ export default function Home() {
   const [hasWon, setHasWon] = useState<any>(false);
   const [startGame, setstartGame] = useState<any>(false);
   const [wonTournament, setWonTournament] = useState<any>(false);
-
+  const [playerNameSubmitted, setplayerNameSubmitted] = useState<any>(false);
   const [canMove, updateCanMove] = useState<any>(false);
   const [playerName, setplayerName] = useState<any>(false);
+
+  const waitingRoomGifs = [
+    "https://i.giphy.com/l4FGlYoiqQTxBsyGY.webp",
+    "https://i.giphy.com/daOkKrzlWaKXtZxxwW.webp",
+    "https://i.giphy.com/yx400dIdkwWdsCgWYp.webp",
+    "https://i.giphy.com/3o6gb3kkXfLvdKEZs4.webp",
+    "https://i.giphy.com/gyCS97pRQhJAvBEX3D.webp",
+    "https://i.giphy.com/zOwzTlnOnx1T9JZgql.webp",
+    "https://i.giphy.com/VGcRGgJPFLS7QBJz4X.webp",
+    "https://i.giphy.com/X8M3OBHBLRWDWVaLYd.webp",
+    "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExYzVxMDdlNDExZ3F5aTMyYzd2YWNiYjdxMDYyMGxkYTgyajg4cjVmOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GeimqsH0TLDt4tScGw/giphy.webp",
+    "https://media0.giphy.com/media/OSfaAz9wRDBGZ28P0Z/200.webp?cid=ecf05e471t2kyj8oeyt9stjwkdarxuq6zbseysj7ckmfotr9&ep=v1_gifs_search&rid=200.webp&ct=g",
+    "https://media2.giphy.com/media/ez2l9l9HZEOgQ9mjTi/giphy.webp?cid=790b76113ynpdan7h4ct75bveyqqve6xn051zvf6z25zdhlt&ep=v1_gifs_search&rid=giphy.webp&ct=g",
+  ];
+
+  const winnerGifs = [
+    "https://i.giphy.com/4QFAH0qZ0LQnIwVYKT.webp",
+    "https://i.giphy.com/MFmHhd0LenGBsqp7Uh.webp",
+    "https://i.giphy.com/xT0GqssRweIhlz209i.webp",
+    "https://i.giphy.com/MSmj1MrnT8q26dsuAi.webp",
+    "https://i.giphy.com/lnlAifQdenMxW.webp",
+    "https://i.giphy.com/gd0Dqg6rYhttBVCZqd.webp",
+    "https://i.giphy.com/o75ajIFH0QnQC3nCeD.webp",
+    "https://i.giphy.com/13w0EvKKrzNPH2.webp",
+    "https://i.giphy.com/l4FGztRST7RVKUhoI.webp",
+    "https://i.giphy.com/cQNRp4QA8z7B6.webp",
+  ];
   useEffect(() => {
     (window as any).won = false;
   }, []);
@@ -117,6 +144,7 @@ export default function Home() {
       name: playerName,
       role: "player",
     });
+    setplayerNameSubmitted(true);
     (window as any).playerSocket.on("START-PLAY", (data: any) => {
       setPlayers(data);
       setstartGame(true);
@@ -158,13 +186,33 @@ export default function Home() {
   }
   return (
     <main className=" min-h-screen flex-col items-center justify-between p-24">
-      <div className={`text-center ${startGame ? "none" : "block"}`}>
+      <div
+        className={`text-center ${
+          startGame || playerNameSubmitted ? "none" : "block"
+        }`}
+      >
         <p>Enter your name to start </p> <br />
         <input onChange={(e) => setplayerName(e.target.value)} type="text" />
         <button onClick={() => sn()}>Submit</button>
       </div>
-      {/* <p> Player 1 : {players.name}</p>
-      Player 2 : {players.name} */}
+      {playerNameSubmitted && !startGame && (
+        <>
+          <p className="my-4 text-center">
+            {" "}
+            Thanks for joining {playerName}, please wait while others gather and
+            we start the tournament!
+          </p>
+          <img
+            className="mx-auto"
+            src={
+              waitingRoomGifs[
+                Math.floor(Math.random() * waitingRoomGifs.length)
+              ]
+            }
+            alt=""
+          />
+        </>
+      )}
       <p></p> <br />
       <p
         className={`text-center mb-5 ${
@@ -178,9 +226,34 @@ export default function Home() {
         <p className="text-center">
           {!wonTournament && (
             <>
-              {hasWon == (window as any).moveType
-                ? "Congratulations you have won this match. please while we connect you to the next round..."
-                : "Sorry, please try again"}
+              {hasWon == (window as any).moveType ? (
+                <>
+                  <p>
+                    {" "}
+                    Congratulations you have won this match. please while we
+                    connect you to the next round...{" "}
+                  </p>
+                  <img
+                    className="mx-auto"
+                    src={
+                      winnerGifs[Math.floor(Math.random() * winnerGifs.length)]
+                    }
+                    alt="won game"
+                  />
+                </>
+              ) : (
+                <>
+                  <p className="mb-4 mt-2">
+                    {" "}
+                    You lost this round, better luck next time!
+                  </p>
+                  <img
+                    src="/lostgame.gif"
+                    alt="lost game"
+                    className="mx-auto"
+                  />
+                </>
+              )}
             </>
           )}
           {wonTournament && (

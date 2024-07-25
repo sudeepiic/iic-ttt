@@ -38,7 +38,7 @@ export default function DB() {
 
       {currentRoom.length && (
         <div className="counts">
-          <h1 className="mb-5">
+          <h1 className="mb-[3rem]">
             Players playing in this tournament and their pairings
           </h1>
           {currentRoom.map((room: any, index) => {
